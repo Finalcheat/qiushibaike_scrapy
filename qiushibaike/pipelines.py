@@ -13,6 +13,7 @@ sys.setdefaultencoding('utf-8')
 import pymysql
 import hashlib
 import time
+from scrapy.exceptions import DropItem
 from qiushibaike.private_settings import MYSQL_CONFIG
 
 
@@ -61,5 +62,6 @@ class QiushibaikePipeline(object):
                     cur.execute(sql, (content, md5, pubtime, crawl_time, item["like"], item["dislike"], item["href"],
                                     item["source"]))
                     self.conn.commit()
-
-        return item
+            return item
+        else:
+            raise DropItem("md5 dup in %s" % item)
